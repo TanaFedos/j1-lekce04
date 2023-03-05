@@ -4,6 +4,7 @@ import cz.czechitas.kockamyssyr.api.*;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.Spliterator;
 
 /**
  * Hlaví třída pro hru Kočka–myš–sýr.
@@ -32,7 +33,7 @@ public class HlavniProgram {
      */
     public void run() {
         tom = vytvorKocku();
-        tom.setBrain(new KeyboardBrain(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D));
+        //tom.setBrain(new KeyboardBrain(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D));
 
         jerry = vytvorMys();
         jerry.setBrain(new KeyboardBrain());
@@ -42,8 +43,116 @@ public class HlavniProgram {
     }
 
     public void chytMys() {
-        // TODO: Sem vepište svůj program
+        while (jerry.isAlive()) {
+            jdiZaJerrym();
+        }
+        jdiZaJerrym();
     }
+
+    private void jdiZaJerrym() {
+        int horizontalniRozdil = tom.getX() - jerry.getX();
+        if (horizontalniRozdil < 0) {
+            otocSeVpravo();
+            while (tom.getX() < jerry.getX()) {
+                vyhniSeStromu();
+                tom.moveForward();
+            }
+        } else if (horizontalniRozdil > 0) {
+            otocSeVlevo();
+            while (tom.getX() > jerry.getX()) {
+                vyhniSeStromu();
+                tom.moveForward();
+            }
+        }
+        int vertikalniRozdil = tom.getY() - jerry.getY();
+        if (vertikalniRozdil < 0) {
+            otocSeDolu();
+            while (tom.getY() < jerry.getY()) {
+                vyhniSeStromu();
+                tom.moveForward();
+            }
+        } else if (vertikalniRozdil > 0) {
+            otocSeNahoru();
+            while (tom.getY() > jerry.getY()) {
+                vyhniSeStromu();
+                tom.moveForward();
+            }
+        }
+    }
+
+    private void otocSeDolu() {
+        if (tom.getOrientation() == PlayerOrientation.DOWN) {
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.RIGHT) {
+            tom.turnRight();
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.LEFT) {
+            tom.turnLeft();
+            return;
+        }
+        tom.turnLeft();
+        tom.turnLeft();
+    }
+
+    private void otocSeNahoru() {
+        if (tom.getOrientation() == PlayerOrientation.UP) {
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.RIGHT) {
+            tom.turnLeft();
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.LEFT) {
+            tom.turnRight();
+            return;
+        }
+        tom.turnLeft();
+        tom.turnLeft();
+    }
+
+    private void otocSeVlevo() {
+        if (tom.getOrientation() == PlayerOrientation.LEFT) {
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.UP) {
+            tom.turnLeft();
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.DOWN) {
+            tom.turnRight();
+            return;
+        }
+        tom.turnRight();
+        tom.turnRight();
+    }
+
+    private void otocSeVpravo() {
+        if (tom.getOrientation() == PlayerOrientation.RIGHT) {
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.UP) {
+            tom.turnRight();
+            return;
+        }
+        if (tom.getOrientation() == PlayerOrientation.DOWN) {
+            tom.turnLeft();
+            return;
+        }
+        tom.turnLeft();
+        tom.turnLeft();
+    }
+
+    private void vyhniSeStromu() {
+        if (tom.isPossibleToMoveForward()) {
+            return;
+        }
+        tom.turnRight();
+        tom.moveForward();
+        tom.turnLeft();
+    }
+
 
     public void vytvorVeci(int pocetStromu) {
         for (int i = 0; i < pocetStromu; i++) {
@@ -52,6 +161,7 @@ public class HlavniProgram {
         vytvorSyr();
         vytvorJitrnici();
     }
+
     public Tree vytvorStrom() {
         return new Tree(vytvorNahodnyBod());
     }
